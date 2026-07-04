@@ -6,7 +6,7 @@ import { Hero } from '../components/Hero';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Globe } from '../components/Globe';
-import { tripAPI } from '../services/api';
+import { tripAPI, authAPI } from '../services/api';
 
 const personalities = [
   { value: 'Explorer', emoji: '🗺️', description: 'Off-grid adventure & hidden trails' },

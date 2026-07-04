@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, LogIn, Loader2 } from 'lucide-react';
+import { Mail, Lock, LogIn, Loader2, Compass } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Card } from '../components/Card';
@@ -31,38 +31,56 @@ export default function Login() {
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      setError(err.response?.data?.error || 'Login failed. Please verify credentials.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 animate-gradient py-12 px-4 flex items-center justify-center">
-      <div className="max-w-md w-full">
+    <div className="relative min-h-screen bg-[#09090B] text-white flex items-center justify-center px-6 overflow-hidden">
+      
+      {/* Cinematic Blur Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-500/10 blur-[120px] pointer-events-none animate-pulse-slow" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-500/10 blur-[120px] pointer-events-none animate-pulse-slower" />
+
+      <div className="max-w-md w-full relative z-10 space-y-6">
+        
+        {/* Branding & Welcome Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center space-y-3"
         >
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            Welcome Back
-          </h1>
-          <p className="text-gray-600">Sign in to continue your journey</p>
+          <div className="inline-flex items-center gap-2.5 mx-auto">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#6EE7F9] to-[#8B5CF6] flex items-center justify-center shadow-lg">
+              <Compass size={22} className="text-black animate-spin-slow" />
+            </div>
+            <span className="font-semibold text-lg tracking-wider bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              CULTURELENS
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold tracking-tight text-white">Welcome Back</h1>
+            <p className="text-gray-400 text-xs font-light">Sign in to unlock destination profiles and secrets</p>
+          </div>
         </motion.div>
 
-        <Card glass>
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Login Form Container Card */}
+        <Card glass className="bg-[#111214]/85 border-white/10 p-8 shadow-2xl">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+              <div className="bg-red-500/10 border border-red-500/30 text-red-300 px-4 py-3 rounded-2xl text-xs font-medium">
                 {error}
               </div>
             )}
 
             <Input
               type="email"
-              label="Email"
-              placeholder="your@email.com"
+              label="Email Address"
+              placeholder="name@domain.com"
               icon={Mail}
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -81,38 +99,33 @@ export default function Login() {
 
             <Button
               type="submit"
-              size="lg"
               disabled={loading}
-              className="w-full"
+              className="w-full py-4 text-sm font-semibold tracking-wide flex items-center justify-center gap-2 mt-2"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                  Signing In...
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Authenticating...
                 </>
               ) : (
                 <>
-                  <LogIn className="w-5 h-5 mr-2" />
-                  Sign In
+                  <LogIn size={16} />
+                  <span>Sign In</span>
                 </>
               )}
             </Button>
 
-            <div className="text-center text-sm text-gray-600">
+            <div className="text-center text-xs text-gray-400 font-light pt-2">
               Don't have an account?{' '}
-              <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+              <Link to="/register" className="text-[#6EE7F9] hover:underline font-semibold tracking-wide">
                 Sign Up
-              </Link>
-            </div>
-
-            <div className="text-center">
-              <Link to="/" className="text-sm text-gray-500 hover:text-gray-700">
-                Continue as Guest
               </Link>
             </div>
           </form>
         </Card>
+
       </div>
     </div>
   );
 }
+
