@@ -3,7 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import authRoutes from './routes/authRoutes.js';
 import tripRoutes from './routes/tripRoutes.js';
+import { authenticateToken } from './middleware/auth.js';
 
 const app = express();
 
@@ -26,7 +28,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'CultureLens API is running' });
 });
 
-app.use('/api/trips', tripRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/trips', authenticateToken, tripRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

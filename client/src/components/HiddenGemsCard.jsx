@@ -1,48 +1,55 @@
 import { motion } from 'framer-motion';
-import { MapPin, Clock, Tag } from 'lucide-react';
+import { Sparkles, Clock, Tag } from 'lucide-react';
 import { Card } from './Card';
 
 export function HiddenGemsCard({ gems }) {
   if (!gems || gems.length === 0) return null;
 
   return (
-    <Card glass className="mb-8">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl">
-          <MapPin className="w-6 h-6 text-white" />
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/20">
+          <Sparkles className="w-5 h-5" />
         </div>
-        <h2 className="text-3xl font-bold text-gray-800">Hidden Gems</h2>
+        <div>
+          <h2 className="text-xl font-bold tracking-wide text-white">Hidden Gems</h2>
+          <p className="text-xs text-gray-400 font-light">Off the beaten track sites favored by local experts</p>
+        </div>
       </div>
+      
       <div className="grid md:grid-cols-2 gap-4">
         {gems.map((gem, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: idx * 0.1 }}
-            className="bg-white/50 rounded-xl p-5 hover:bg-white/80 transition-all duration-300 border border-gray-200 hover:shadow-md"
+          <Card 
+            key={idx} 
+            glass 
+            hover 
+            animate={false} // animations handled by parent container transitions
+            className="bg-[#111214]/65 border-white/[0.08] hover:border-emerald-500/30 p-5 flex flex-col justify-between"
           >
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="text-lg font-bold text-gray-800">{gem.name}</h3>
-              <span className="text-2xl">{getCategoryEmoji(gem.category)}</span>
+            <div>
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <h3 className="text-sm font-semibold tracking-wide text-white">{gem.name}</h3>
+                <span className="text-xl select-none">{getCategoryEmoji(gem.category)}</span>
+              </div>
+              <p className="text-gray-400 text-xs font-light leading-relaxed mb-4">
+                {gem.description}
+              </p>
             </div>
-            <p className="text-gray-600 text-sm mb-3 leading-relaxed">
-              {gem.description}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                <Tag size={12} />
+            
+            <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
+              <div className="flex items-center gap-1 text-[10px] text-gray-400 bg-white/5 px-2.5 py-0.5 rounded-full border border-white/5">
+                <Tag size={10} className="text-emerald-400" />
                 <span>{gem.category}</span>
               </div>
-              <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                <Clock size={12} />
+              <div className="flex items-center gap-1 text-[10px] text-gray-400 bg-white/5 px-2.5 py-0.5 rounded-full border border-white/5">
+                <Clock size={10} className="text-amber-400" />
                 <span>{gem.bestTime}</span>
               </div>
             </div>
-          </motion.div>
+          </Card>
         ))}
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -59,3 +66,4 @@ function getCategoryEmoji(category) {
   };
   return categories[category] || categories.default;
 }
+

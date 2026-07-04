@@ -21,6 +21,7 @@ export const generateTrip = async (req, res) => {
 
     const trip = await prisma.trip.create({
       data: {
+        userId: req.user?.userId || null,
         destination,
         budget,
         duration,
@@ -83,7 +84,10 @@ export const getTrip = async (req, res) => {
 
 export const getAllTrips = async (req, res) => {
   try {
+    const where = req.user ? { userId: req.user.userId } : { userId: null };
+    
     const trips = await prisma.trip.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,

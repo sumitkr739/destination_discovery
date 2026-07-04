@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Heart, CheckCircle, XCircle } from 'lucide-react';
 import { Card } from './Card';
 
@@ -6,37 +5,38 @@ export function CulturalEtiquette({ etiquette }) {
   if (!etiquette || etiquette.length === 0) return null;
 
   return (
-    <Card glass className="mb-8">
+    <Card glass className="bg-[#111214]/65 border-white/[0.08] p-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl">
-          <Heart className="w-6 h-6 text-white" />
+        <div className="p-2 bg-rose-500/10 rounded-xl text-rose-400 border border-rose-500/20">
+          <Heart className="w-5 h-5" />
         </div>
-        <h2 className="text-3xl font-bold text-gray-800">Cultural Etiquette</h2>
+        <div>
+          <h2 className="text-xl font-bold tracking-wide text-white">Cultural Etiquette</h2>
+          <p className="text-xs text-gray-400 font-light">Crucial rules of respect and integration for travelers</p>
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-4">
         {etiquette.map((item, idx) => (
-          <motion.div
+          <div
             key={idx}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            className="bg-white/60 rounded-xl p-5 border border-gray-200"
+            className="bg-[#17181C]/40 border border-white/5 rounded-2xl p-5"
           >
-            <h3 className="text-lg font-bold text-gray-800 mb-4">{item.category}</h3>
+            <h3 className="text-sm font-semibold tracking-wide text-white mb-4 border-b border-white/5 pb-2">
+              {item.category}
+            </h3>
             
             <div className="space-y-4">
               {item.dos && item.dos.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <span className="font-semibold text-green-700">Do's</span>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Do's</span>
                   </div>
-                  <ul className="space-y-1 ml-7">
+                  <ul className="space-y-2.5 pl-6 list-disc list-outside text-gray-400 text-xs font-light leading-normal">
                     {item.dos.map((doItem, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex items-start">
-                        <span className="text-green-500 mr-2">✓</span>
-                        <span>{doItem}</span>
+                      <li key={i} className="marker:text-emerald-400">
+                        {doItem}
                       </li>
                     ))}
                   </ul>
@@ -44,25 +44,25 @@ export function CulturalEtiquette({ etiquette }) {
               )}
 
               {item.donts && item.donts.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <XCircle className="w-5 h-5 text-red-600" />
-                    <span className="font-semibold text-red-700">Don'ts</span>
+                <div className="space-y-2 pt-2 border-t border-white/5">
+                  <div className="flex items-center gap-2 text-rose-400 text-xs font-bold uppercase tracking-wider">
+                    <XCircle className="w-4 h-4" />
+                    <span>Don'ts</span>
                   </div>
-                  <ul className="space-y-1 ml-7">
+                  <ul className="space-y-2.5 pl-6 list-disc list-outside text-gray-400 text-xs font-light leading-normal">
                     {item.donts.map((dontItem, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex items-start">
-                        <span className="text-red-500 mr-2">✗</span>
-                        <span>{dontItem}</span>
+                      <li key={i} className="marker:text-rose-400">
+                        {dontItem}
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </Card>
   );
 }
+

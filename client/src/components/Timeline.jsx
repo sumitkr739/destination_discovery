@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin, Lightbulb } from 'lucide-react';
 import { Card } from './Card';
 
@@ -6,76 +5,74 @@ export function Timeline({ timeline }) {
   if (!timeline || timeline.length === 0) return null;
 
   return (
-    <Card glass className="mb-8">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl">
-          <Calendar className="w-6 h-6 text-white" />
+    <Card glass className="bg-[#111214]/65 border-white/[0.08] p-6">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="p-2 bg-[#6EE7F9]/10 rounded-xl text-[#6EE7F9] border border-[#6EE7F9]/20">
+          <Calendar className="w-5 h-5" />
         </div>
-        <h2 className="text-3xl font-bold text-gray-800">Day-by-Day Itinerary</h2>
+        <div>
+          <h2 className="text-xl font-bold tracking-wide text-white">Day-by-Day Itinerary</h2>
+          <p className="text-xs text-gray-400 font-light">Handcrafted routing scheduled dynamically for you</p>
+        </div>
       </div>
 
-      <div className="space-y-8">
-        {timeline.map((day, dayIdx) => (
-          <motion.div
-            key={dayIdx}
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: dayIdx * 0.15 }}
-            className="relative"
-          >
-            {/* Timeline connector */}
-            {dayIdx < timeline.length - 1 && (
-              <div className="absolute left-6 top-16 bottom-0 w-0.5 bg-gradient-to-b from-green-400 to-transparent" />
-            )}
+      <div className="space-y-8 relative">
+        {/* Glow path background line */}
+        <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-gradient-to-b from-[#6EE7F9]/30 via-[#8B5CF6]/20 to-transparent pointer-events-none" />
 
-            {/* Day header */}
-            <div className="flex items-center gap-4 mb-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg z-10">
-                {day.day}
+        {timeline.map((day, dayIdx) => (
+          <div key={dayIdx} className="relative">
+            {/* Day Header */}
+            <div className="flex items-center gap-4 mb-4 relative z-10">
+              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#6EE7F9] to-[#8B5CF6] rounded-full flex items-center justify-center text-black font-extrabold text-sm shadow-[0_0_15px_rgba(110,231,249,0.2)]">
+                D{day.day}
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-gray-800">{day.title}</h3>
-                <p className="text-sm text-gray-500">Day {day.day}</p>
+                <h3 className="text-sm font-semibold tracking-wide text-white">{day.title}</h3>
+                <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Day {day.day}</p>
               </div>
             </div>
 
-            {/* Activities */}
-            <div className="ml-16 space-y-4">
+            {/* Activities list */}
+            <div className="ml-14 space-y-3.5">
               {day.activities && day.activities.map((activity, actIdx) => (
-                <motion.div
+                <div
                   key={actIdx}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: dayIdx * 0.15 + actIdx * 0.1 }}
-                  className="bg-white/70 rounded-xl p-4 border border-gray-200 hover:bg-white/90 transition-all duration-300"
+                  className="bg-[#17181C]/50 border border-white/5 hover:border-white/10 rounded-2xl p-4.5 transition-all duration-300 relative overflow-hidden"
                 >
-                  <div className="flex flex-wrap items-center gap-3 mb-2">
-                    <div className="flex items-center gap-2 text-green-600">
-                      <Clock size={16} />
-                      <span className="font-semibold text-sm">{activity.time}</span>
+                  {/* Subtle hover backlight */}
+                  <div className="absolute top-0 right-0 w-[80px] h-[80px] bg-[#6EE7F9]/3 rounded-full blur-[30px] pointer-events-none" />
+
+                  <div className="flex flex-wrap items-center gap-3.5 mb-2.5">
+                    <div className="flex items-center gap-1 text-[#6EE7F9] text-[10px] font-bold uppercase tracking-wider">
+                      <Clock size={12} />
+                      <span>{activity.time}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <MapPin size={16} />
-                      <span className="text-sm">{activity.location}</span>
+                    <div className="flex items-center gap-1 text-gray-400 text-[10px] font-medium">
+                      <MapPin size={12} className="text-[#8B5CF6]" />
+                      <span>{activity.location}</span>
                     </div>
                   </div>
                   
-                  <h4 className="font-bold text-gray-800 mb-2">{activity.activity}</h4>
+                  <h4 className="text-xs font-semibold tracking-wide text-white mb-2 leading-relaxed">
+                    {activity.activity}
+                  </h4>
                   
                   {activity.tips && (
-                    <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded p-3 mt-2">
-                      <div className="flex items-start gap-2">
-                        <Lightbulb className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-xs text-gray-700">{activity.tips}</p>
-                      </div>
+                    <div className="bg-amber-500/5 border-l-2 border-amber-500/50 rounded-r-xl p-3 mt-3 flex items-start gap-2.5">
+                      <Lightbulb className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-[10px] text-gray-300 leading-normal font-light">
+                        {activity.tips}
+                      </p>
                     </div>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </Card>
   );
 }
+

@@ -1,56 +1,28 @@
 import { motion } from 'framer-motion';
-import { Compass, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export function Hero() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="text-center space-y-6 mb-12"
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="text-center space-y-4 mb-8 pt-6"
     >
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="inline-block"
-      >
-        <div className="relative">
-          <Compass className="w-20 h-20 text-blue-600 mx-auto" />
-          <Sparkles className="w-8 h-8 text-yellow-400 absolute -top-2 -right-2 animate-pulse" />
-        </div>
-      </motion.div>
+      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#6EE7F9]/20 bg-[#6EE7F9]/5 text-[#6EE7F9] text-xs font-semibold tracking-wider uppercase mb-2">
+        <Sparkles size={12} className="animate-pulse" />
+        AI-Powered Cultural Travel
+      </div>
       
-      <div className="space-y-4">
-        <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
+      <div className="space-y-3">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-white via-white to-[#6EE7F9]/80 bg-clip-text text-transparent">
           CultureLens AI
         </h1>
-        <p className="text-xl md:text-2xl text-gray-700 font-medium">
-          Discover Places Like a <span className="text-blue-600 font-bold">Local</span>
+        <p className="text-lg md:text-xl text-gray-400 font-normal max-w-xl mx-auto tracking-normal">
+          Unveil the soul of your destination. Experience authentic stories, hidden gems, and cultural rituals handcrafted by AI.
         </p>
-        <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-          Experience authentic culture, hidden gems, and local stories powered by AI.
-          Your journey beyond ordinary travel begins here.
-        </p>
-      </div>
-
-      <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
-        <div className="flex items-center gap-2 glass px-4 py-2 rounded-full">
-          <span className="text-2xl">🗺️</span>
-          <span>Hidden Gems</span>
-        </div>
-        <div className="flex items-center gap-2 glass px-4 py-2 rounded-full">
-          <span className="text-2xl">🍜</span>
-          <span>Local Food</span>
-        </div>
-        <div className="flex items-center gap-2 glass px-4 py-2 rounded-full">
-          <span className="text-2xl">🎭</span>
-          <span>Cultural Experiences</span>
-        </div>
-        <div className="flex items-center gap-2 glass px-4 py-2 rounded-full">
-          <span className="text-2xl">✨</span>
-          <span>AI-Powered</span>
-        </div>
       </div>
     </motion.div>
   );
 }
+

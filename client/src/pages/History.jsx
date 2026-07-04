@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Trash2, Eye, Calendar } from 'lucide-react';
+import { ArrowLeft, Trash2, Eye, Calendar, Compass, History as HistoryIcon } from 'lucide-react';
 import { tripAPI } from '../services/api';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
-import { LoadingSkeleton } from '../components/LoadingSkeleton';
 
 export default function History() {
   const navigate = useNavigate();
@@ -59,54 +58,76 @@ export default function History() {
   };
 
   if (loading) {
-    return <LoadingSkeleton />;
+    return (
+      <div className="min-h-screen bg-[#09090B] flex flex-col items-center justify-center space-y-4">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+          className="w-10 h-10 border-4 border-[#6EE7F9] border-t-transparent rounded-full"
+        />
+        <p className="text-gray-400 text-sm tracking-wider font-light animate-pulse">
+          DISCOVERING HISTORICAL RECORDS...
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
+    <div className="relative min-h-screen bg-[#09090B] text-white py-12 px-6 overflow-hidden">
+      
+      {/* Background gradients */}
+      <div className="absolute top-0 left-0 w-[50%] h-[40%] bg-purple-500/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-cyan-500/5 blur-[120px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto space-y-8 relative z-10">
+        
+        {/* Navigation Action bar */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-8"
+          transition={{ duration: 0.5 }}
+          className="flex items-center justify-between border-b border-white/5 pb-6"
         >
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              My Travel History
-            </h1>
-            <p className="text-gray-600">
-              {trips.length} {trips.length === 1 ? 'journey' : 'journeys'} saved
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#6EE7F9] to-[#8B5CF6] flex items-center justify-center shadow-lg">
+              <HistoryIcon size={20} className="text-black" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-wide text-white">Travel History</h1>
+              <p className="text-xs text-gray-400 font-light">
+                You have {trips.length} saved {trips.length === 1 ? 'journey' : 'journeys'}
+              </p>
+            </div>
           </div>
+          
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
             onClick={() => navigate('/')}
-            className="gap-2"
+            className="gap-2 border-white/5 hover:border-white/10"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={16} />
             Back Home
           </Button>
         </motion.div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
+          <div className="bg-red-500/10 border border-red-500/30 text-red-300 px-4 py-3 rounded-2xl text-xs">
             {error}
           </div>
         )}
 
         {trips.length === 0 ? (
-          <Card glass className="text-center py-12">
-            <div className="text-6xl mb-4">🌍</div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              No Trips Yet
+          <Card glass className="text-center py-16 bg-[#111214]/65 border-white/[0.08]">
+            <div className="text-6xl mb-4 select-none">🗺️</div>
+            <h2 className="text-lg font-bold text-white mb-2">
+              No Journeys Documented
             </h2>
-            <p className="text-gray-600 mb-6">
-              Start planning your first cultural journey!
+            <p className="text-gray-400 text-xs font-light max-w-sm mx-auto mb-6 leading-relaxed">
+              Start configuring your custom travelers profile and destination secrets to generate your first path.
             </p>
-            <Button onClick={() => navigate('/')}>
-              Create Your First Trip
+            <Button onClick={() => navigate('/')} className="mx-auto">
+              Configure Journey
             </Button>
           </Card>
         ) : (
@@ -114,84 +135,65 @@ export default function History() {
             {trips.map((trip, idx) => (
               <motion.div
                 key={trip.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
+                transition={{ delay: idx * 0.08 }}
               >
                 <Card
                   glass
-                  className="cursor-pointer group relative overflow-hidden"
+                  hover
+                  className="cursor-pointer bg-[#111214]/65 border-white/[0.08] hover:border-[#6EE7F9]/20 p-5 flex flex-col justify-between h-[280px]"
                   onClick={() => navigate(`/result/${trip.id}`)}
                 >
-                  {/* Background gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  <div className="relative">
-                    {/* Destination */}
-                    <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors">
-                      {trip.destination}
-                    </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <h3 className="text-lg font-bold text-white tracking-wide truncate group-hover:text-[#6EE7F9] transition-colors">
+                        {trip.destination}
+                      </h3>
+                      <span className="text-xl">✈️</span>
+                    </div>
 
-                    {/* Story preview */}
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                    <p className="text-gray-400 text-xs font-light leading-relaxed line-clamp-3">
                       {trip.story}
                     </p>
 
-                    {/* Trip details */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-semibold">
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      <span className="px-2 py-0.5 bg-[#6EE7F9]/5 border border-[#6EE7F9]/20 text-[#6EE7F9] text-[9px] font-bold rounded-full">
                         {trip.budget}
                       </span>
-                      <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-semibold">
+                      <span className="px-2 py-0.5 bg-[#8B5CF6]/5 border border-[#8B5CF6]/20 text-[#8B5CF6] text-[9px] font-bold rounded-full">
                         {trip.duration}
                       </span>
-                      <span className="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full font-semibold">
+                      <span className="px-2 py-0.5 bg-amber-500/5 border border-amber-500/20 text-amber-500 text-[9px] font-bold rounded-full">
                         {trip.personality}
                       </span>
                     </div>
+                  </div>
 
-                    {/* Interests */}
-                    {trip.interests && trip.interests.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {trip.interests.slice(0, 3).map((interest, i) => (
-                          <span key={i} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                            {interest}
-                          </span>
-                        ))}
-                        {trip.interests.length > 3 && (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                            +{trip.interests.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Date and actions */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <Calendar size={14} />
-                        <span>{formatDate(trip.createdAt)}</span>
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/result/${trip.id}`);
-                          }}
-                          className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
-                          title="View trip"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          onClick={(e) => handleDelete(trip.id, e)}
-                          className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
-                          title="Delete trip"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+                  <div className="flex items-center justify-between border-t border-white/5 pt-3 mt-4 text-[10px] text-gray-500 font-light">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar size={12} className="text-[#8B5CF6]" />
+                      <span>{formatDate(trip.createdAt)}</span>
+                    </div>
+                    
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/result/${trip.id}`);
+                        }}
+                        className="p-1.5 bg-white/5 border border-white/5 hover:border-[#6EE7F9]/30 hover:bg-[#6EE7F9]/10 rounded-lg text-gray-400 hover:text-[#6EE7F9] transition-colors"
+                        title="View journey"
+                      >
+                        <Eye size={12} />
+                      </button>
+                      <button
+                        onClick={(e) => handleDelete(trip.id, e)}
+                        className="p-1.5 bg-white/5 border border-white/5 hover:border-red-500/30 hover:bg-red-500/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
+                        title="Delete journey"
+                      >
+                        <Trash2 size={12} />
+                      </button>
                     </div>
                   </div>
                 </Card>
@@ -203,3 +205,4 @@ export default function History() {
     </div>
   );
 }
+
