@@ -7,7 +7,7 @@ An AI-powered travel platform that helps travelers discover destinations through
 
 ## 🎯 Live Demo
 
-**🔗 Frontend:** https://destination-discovery-t4sl.vercel.app  
+**🔗 Frontend:** https://destination-discovery-t4sl.vercel.app/  
 **🔗 Backend API:** https://destination-discovery.onrender.com
 
 ### 🧪 Test Credentials
