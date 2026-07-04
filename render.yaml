@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: culturelens-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd server && npm install && npx prisma generate
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: culturelens-db
+          property: connectionString
+      - key: PORT
+        value: 3000
+      - key: CLIENT_URL
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+databases:
+  - name: culturelens-db
+    plan: free
+    databaseName: culturelens
+    user: culturelens

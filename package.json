@@ -1,0 +1,20 @@
+{
+  "name": "culturelens-ai",
+  "version": "1.0.0",
+  "description": "AI-powered travel platform for discovering destinations through authentic local culture",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "cd client && npm run build",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "prisma:generate": "cd server && npx prisma generate",
+    "prisma:migrate": "cd server && npx prisma migrate dev"
+  },
+  "keywords": ["ai", "travel", "culture", "genai", "promptwars"],
+  "author": "CultureLens Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
