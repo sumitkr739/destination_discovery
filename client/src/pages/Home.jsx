@@ -150,15 +150,62 @@ export default function Home() {
             CULTURELENS
           </span>
         </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => navigate('/history')}
-          className="gap-2 border-white/5 hover:border-white/10"
-        >
-          <History size={16} />
-          Past Trips
-        </Button>
+        <div className="flex items-center gap-3">
+          {(() => {
+            const userData = localStorage.getItem('user');
+            const user = userData ? JSON.parse(userData) : null;
+            
+            if (user) {
+              return (
+                <>
+                  <span className="text-sm text-gray-400">{user.name || user.email}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      localStorage.removeItem('token');
+                      localStorage.removeItem('user');
+                      window.location.reload();
+                    }}
+                    className="border-white/5 hover:border-white/10"
+                  >
+                    Logout
+                  </Button>
+                </>
+              );
+            } else {
+              return (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate('/login')}
+                    className="border-white/5 hover:border-white/10"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => navigate('/register')}
+                    className="border-white/5 hover:border-white/10"
+                  >
+                    Sign Up
+                  </Button>
+                </>
+              );
+            }
+          })()}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => navigate('/history')}
+            className="gap-2 border-white/5 hover:border-white/10"
+          >
+            <History size={16} />
+            Past Trips
+          </Button>
+        </div>
       </nav>
 
       {/* Hero & Globe Split Layout */}

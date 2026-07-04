@@ -7,8 +7,38 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 120000, // 2 minutes for AI generation
+  timeout: 120000,
 });
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const authAPI = {
+  register: async (userData) => {
+    const response = await api.post('/api/auth/register', userData);
+    return response.data;
+  },
+
+  login: async (credentials) => {
+    const response = await api.post('/api/auth/login', credentials);
+    return response.data;
+  },
+
+  getProfile: async () => {
+    const response = await api.get('/api/auth/profile');
+    return response.data;
+  },
+
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+};
 
 export const tripAPI = {
   generate: async (tripData) => {
