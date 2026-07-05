@@ -16,7 +16,7 @@ export function SouvenirsCard({ souvenirs }) {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {souvenirs.map((souvenir, idx) => (
           <div
             key={idx}

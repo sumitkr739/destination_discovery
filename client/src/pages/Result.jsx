@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Download, Share2, Compass, MapPin, Sparkles, Navigation } from 'lucide-react';
 import { tripAPI } from '../services/api';
 import { Button } from '../components/Button';
+import { BrandLogo } from '../components/Logo';
 import { StoryCard } from '../components/StoryCard';
 import { HiddenGemsCard } from '../components/HiddenGemsCard';
 import { FoodPassport } from '../components/FoodPassport';
@@ -23,6 +24,14 @@ export default function Result() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const tabs = [
+    { id: 'overview', label: 'Overview & Map', icon: '🗺️' },
+    { id: 'itinerary', label: 'Itinerary', icon: '📅' },
+    { id: 'culture', label: 'Culture & Cuisine', icon: '🎭' },
+    { id: 'prep', label: 'Packing & Prep', icon: '🎒' },
+  ];
 
   useEffect(() => {
     fetchTrip();
@@ -123,27 +132,20 @@ export default function Result() {
           transition={{ duration: 0.5 }}
           className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-6"
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button
               variant="secondary"
               size="sm"
               onClick={() => navigate('/')}
-              className="gap-2 border-white/5 hover:border-white/10"
+              className="gap-2 border-white/5 hover:border-white/10 px-2.5 sm:px-4"
             >
               <ArrowLeft size={16} />
-              Craft New
+              <span className="hidden sm:inline">Craft New</span>
             </Button>
             
             <div className="h-6 w-px bg-white/10" />
 
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#6EE7F9] to-[#8B5CF6] flex items-center justify-center shadow-lg">
-                <Compass size={16} className="text-black" />
-              </div>
-              <span className="font-semibold text-xs tracking-wider text-gray-300">
-                CULTURELENS REPORT
-              </span>
-            </div>
+            <BrandLogo size="sm" suffix="REPORT" />
           </div>
 
           <div className="flex gap-2">
@@ -151,20 +153,20 @@ export default function Result() {
               variant="outline"
               size="sm"
               onClick={handleShare}
-              className="gap-2 border-white/10 hover:bg-white/5 text-gray-300"
+              className="gap-2 border-white/10 hover:bg-white/5 text-gray-300 px-2.5 sm:px-4"
             >
               <Share2 size={14} />
-              Share Report
+              <span className="hidden sm:inline">Share Report</span>
             </Button>
             <Button
               variant="primary"
               size="sm"
               onClick={handleExportPDF}
               disabled={exporting}
-              className="gap-2 text-black bg-[#6EE7F9] hover:bg-[#6EE7F9]/90"
+              className="gap-2 text-black bg-[#6EE7F9] hover:bg-[#6EE7F9]/90 px-2.5 sm:px-4"
             >
               <Download size={14} />
-              {exporting ? 'Exporting...' : 'Export PDF'}
+              <span className="hidden sm:inline">{exporting ? 'Exporting...' : 'Export PDF'}</span>
             </Button>
           </div>
         </motion.div>
@@ -208,55 +210,89 @@ export default function Result() {
           </div>
         </motion.div>
 
-        {/* Bento Grid layout grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* Main Story Narrative - Spans 2 Columns on large screens */}
-          <div className="lg:col-span-2 space-y-6">
-            <StoryCard story={trip.story} />
-          </div>
+        {/* Navigation Tabs Selector */}
+        <div className="flex border-b border-white/10 overflow-x-auto gap-2 pb-px scrollbar-none mb-6">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`relative px-5 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors duration-200 select-none whitespace-nowrap ${
+                  isActive ? 'text-[#6EE7F9]' : 'text-gray-400 hover:text-gray-200'
+                }`}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <span>{tab.icon}</span>
+                  <span>{tab.label}</span>
+                </span>
+                {isActive && (
+                  <motion.div
+                    layoutId="mainTabUnderline"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#6EE7F9] to-[#8B5CF6]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Interactive OSM Map - Spans 1 Column */}
-          <div className="lg:col-span-1">
-            <Map attractions={trip.attractions} destination={trip.destination} />
-          </div>
+        {/* Dynamic Tab Contents */}
+        <div className="relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
+            >
+              {activeTab === 'overview' && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                  {/* Left Column - Spans 2 Columns on desktop */}
+                  <div className="lg:col-span-2 space-y-6">
+                    <StoryCard story={trip.story} />
+                    <HiddenGemsCard gems={trip.hiddenGems} />
+                  </div>
+                  {/* Right Column - Spans 1 Column */}
+                  <div className="lg:col-span-1 lg:sticky lg:top-6">
+                    <Map attractions={trip.attractions} destination={trip.destination} />
+                  </div>
+                </div>
+              )}
 
-          {/* Hidden Gems List - Spans 2 Columns */}
-          <div className="lg:col-span-2">
-            <HiddenGemsCard gems={trip.hiddenGems} />
-          </div>
+              {activeTab === 'itinerary' && (
+                <div className="max-w-4xl mx-auto">
+                  <Timeline timeline={trip.timeline} />
+                </div>
+              )}
 
-          {/* Cultural Etiquette Rules - Spans 1 Column */}
-          <div className="lg:col-span-1">
-            <CulturalEtiquette etiquette={trip.culturalEtiquette} />
-          </div>
+              {activeTab === 'culture' && (
+                <div className="space-y-6">
+                  <FoodPassport foodPassport={trip.foodPassport} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <CulturalEtiquette etiquette={trip.culturalEtiquette} />
+                    <LanguageCard phrases={trip.phrases} destination={trip.destination} />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FestivalsCard festivals={trip.festivals} />
+                    <SouvenirsCard souvenirs={trip.souvenirs} />
+                  </div>
+                </div>
+              )}
 
-          {/* Food Passport Culinary sections - Spans 2 Columns */}
-          <div className="lg:col-span-2">
-            <FoodPassport foodPassport={trip.foodPassport} />
-          </div>
-
-          {/* Language Companion phrase widget - Spans 1 Column */}
-          <div className="lg:col-span-1">
-            <LanguageCard phrases={trip.phrases} />
-          </div>
-
-          {/* Travel Itinerary Schedule - Spans 2 Columns */}
-          <div className="lg:col-span-2">
-            <Timeline timeline={trip.timeline} />
-          </div>
-
-          {/* Right Column Stack for Side Elements */}
-          <div className="lg:col-span-1 space-y-6">
-            <FestivalsCard festivals={trip.festivals} />
-            <SouvenirsCard souvenirs={trip.souvenirs} />
-            <PackingCard packingList={trip.packingList} />
-          </div>
-
+              {activeTab === 'prep' && (
+                <div className="max-w-4xl mx-auto">
+                  <PackingCard packingList={trip.packingList} />
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Floating bottom Footer */}
-        <div className="text-center pt-8 border-t border-white/5">
+        <div className="text-center pt-8 border-t border-white/5 mt-10">
           <Button onClick={() => navigate('/history')} variant="secondary" className="mx-auto border-white/5 hover:border-white/10">
             View All Saved Journeys
           </Button>

@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, LogIn, Loader2, Compass } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Card } from '../components/Card';
 import { authAPI } from '../services/api';
+import { BrandLogo } from '../components/Logo';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
@@ -27,7 +29,8 @@ export default function Login() {
       if (response.success) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
-        navigate('/');
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -53,13 +56,8 @@ export default function Login() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-center space-y-3"
         >
-          <div className="inline-flex items-center gap-2.5 mx-auto">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#6EE7F9] to-[#8B5CF6] flex items-center justify-center shadow-lg">
-              <Compass size={22} className="text-black animate-spin-slow" />
-            </div>
-            <span className="font-semibold text-lg tracking-wider bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              CULTURELENS
-            </span>
+          <div className="flex justify-center">
+            <BrandLogo animate />
           </div>
 
           <div className="space-y-1">
@@ -69,7 +67,7 @@ export default function Login() {
         </motion.div>
 
         {/* Login Form Container Card */}
-        <Card glass className="bg-[#111214]/85 border-white/10 p-8 shadow-2xl">
+        <Card glass className="bg-[#111214]/85 border-white/10 p-6 sm:p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-300 px-4 py-3 rounded-2xl text-xs font-medium">
