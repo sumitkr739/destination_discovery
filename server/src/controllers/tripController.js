@@ -11,8 +11,8 @@ const validateTripInput = (data) => {
     throw new Error('Destination is required');
   }
   
-  if (!['Budget', 'Mid-range', 'Luxury'].includes(budget)) {
-    throw new Error('Invalid budget option');
+  if (typeof budget !== 'string' || !budget.trim()) {
+    throw new Error('Budget is required');
   }
   
   if (!duration?.trim()) {

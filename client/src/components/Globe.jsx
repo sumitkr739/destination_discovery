@@ -265,10 +265,10 @@ export function Globe() {
   }, []);
 
   return (
-    <div className="relative w-full h-[400px] flex items-center justify-center cursor-grab active:cursor-grabbing select-none">
+    <div className="relative w-full h-[320px] sm:h-[400px] flex items-center justify-center cursor-grab active:cursor-grabbing select-none">
       <canvas
         ref={canvasRef}
-        className="w-[380px] h-[380px] rounded-full outline-none"
+        className="w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] rounded-full outline-none"
       />
       {/* Decorative radial gradients inside the canvas bounding box */}
       <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#09090b]/10 to-[#09090b] pointer-events-none rounded-full" />

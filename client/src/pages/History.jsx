@@ -104,10 +104,10 @@ export default function History() {
             variant="secondary"
             size="sm"
             onClick={() => navigate('/')}
-            className="gap-2 border-white/5 hover:border-white/10"
+            className="gap-2 border-white/5 hover:border-white/10 px-2.5 sm:px-4"
           >
             <ArrowLeft size={16} />
-            Back Home
+            <span className="hidden sm:inline">Back Home</span>
           </Button>
         </motion.div>
 

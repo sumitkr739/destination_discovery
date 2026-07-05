@@ -1,15 +1,41 @@
 import { MessageCircle, Volume2 } from 'lucide-react';
 import { Card } from './Card';
 
-export function LanguageCard({ phrases }) {
+export function LanguageCard({ phrases, destination = '' }) {
   if (!phrases || phrases.length === 0) return null;
+
+  const getLanguageCode = (dest) => {
+    const d = dest.toLowerCase();
+    if (d.includes('japan') || d.includes('tokyo') || d.includes('kyoto')) return 'ja-JP';
+    if (d.includes('france') || d.includes('paris')) return 'fr-FR';
+    if (d.includes('italy') || d.includes('rome')) return 'it-IT';
+    if (d.includes('mexico') || d.includes('peru') || d.includes('oaxaca') || d.includes('cusco')) return 'es-MX';
+    if (d.includes('india') || d.includes('jaipur')) return 'hi-IN';
+    if (d.includes('indonesia') || d.includes('bali')) return 'id-ID';
+    if (d.includes('iceland') || d.includes('reykjavik')) return 'is-IS';
+    if (d.includes('egypt') || d.includes('cairo')) return 'ar-EG';
+    if (d.includes('spain') || d.includes('madrid') || d.includes('barcelona')) return 'es-ES';
+    if (d.includes('germany') || d.includes('berlin') || d.includes('munich')) return 'de-DE';
+    return 'en-US'; // default fallback
+  };
 
   const handleSpeak = (text) => {
     if ('speechSynthesis' in window) {
       // Cancel any ongoing speaking first
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
+      
+      const langCode = getLanguageCode(destination);
+      utterance.lang = langCode;
       utterance.rate = 0.85; // slightly slower for clarity
+      
+      // Attempt to load the matching system voice
+      const voices = window.speechSynthesis.getVoices();
+      const matchingVoice = voices.find(v => v.lang.startsWith(langCode.split('-')[0]));
+      if (matchingVoice) {
+        utterance.voice = matchingVoice;
+      }
+      
       window.speechSynthesis.speak(utterance);
     }
   };

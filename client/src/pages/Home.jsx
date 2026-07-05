@@ -7,6 +7,7 @@ import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Globe } from '../components/Globe';
 import { tripAPI, authAPI } from '../services/api';
+import { BrandLogo } from '../components/Logo';
 
 const personalities = [
   { value: 'Explorer', emoji: '🗺️', description: 'Off-grid adventure & hidden trails' },
@@ -44,9 +45,10 @@ export default function Home() {
   
   const [formData, setFormData] = useState({
     destination: '',
-    budgetIndex: 1, // Default: Mid-range
+    budgetType: 'Mid-range', // 'Budget', 'Mid-range', 'Luxury', 'Custom'
+    customBudget: '',
     duration: '5 days',
-    personality: 'Explorer',
+    personalities: ['Explorer'],
     interests: [],
   });
 
@@ -94,6 +96,21 @@ export default function Home() {
     }
   };
 
+  const handlePersonalityToggle = (value) => {
+    const isSelected = formData.personalities.includes(value);
+    let updated;
+    if (isSelected) {
+      if (formData.personalities.length <= 1) return; // Keep at least one selected
+      updated = formData.personalities.filter(p => p !== value);
+    } else {
+      updated = [...formData.personalities, value];
+    }
+    setFormData({
+      ...formData,
+      personalities: updated
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -103,10 +120,18 @@ export default function Home() {
       return;
     }
 
+    if (formData.budgetType === 'Custom' && !formData.customBudget.trim()) {
+      setError('Please specify your custom budget');
+      return;
+    }
+
     setLoading(true);
     
     try {
-      const budget = budgetOptions[formData.budgetIndex];
+      const budget = formData.budgetType === 'Custom' 
+        ? formData.customBudget.trim() 
+        : formData.budgetType;
+        
       const interests = formData.interests.length > 0 
         ? formData.interests 
         : ['Culture', 'Local Secrets', 'Heritage'];
@@ -115,7 +140,7 @@ export default function Home() {
         destination: formData.destination,
         budget,
         duration: formData.duration,
-        personality: formData.personality,
+        personality: formData.personalities.join(', '),
         interests
       });
       
@@ -142,15 +167,8 @@ export default function Home() {
 
       {/* Floating Navbar */}
       <nav className="relative z-20 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#6EE7F9] to-[#8B5CF6] flex items-center justify-center shadow-lg">
-            <Compass size={22} className="text-black" />
-          </div>
-          <span className="font-semibold text-lg tracking-wider bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-            CULTURELENS
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
+        <BrandLogo />
+        <div className="flex items-center gap-2 sm:gap-3">
           {(() => {
             const userData = localStorage.getItem('user');
             const user = userData ? JSON.parse(userData) : null;
@@ -158,16 +176,15 @@ export default function Home() {
             if (user) {
               return (
                 <>
-                  <span className="text-sm text-gray-400">{user.name || user.email}</span>
+                  <span className="text-sm text-gray-400 hidden sm:inline max-w-[120px] truncate">{user.name || user.email}</span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      localStorage.removeItem('token');
-                      localStorage.removeItem('user');
+                      authAPI.logout();
                       window.location.reload();
                     }}
-                    className="border-white/5 hover:border-white/10"
+                    className="border-white/5 hover:border-white/10 text-xs sm:text-sm px-2.5 sm:px-4"
                   >
                     Logout
                   </Button>
@@ -180,7 +197,7 @@ export default function Home() {
                     variant="ghost"
                     size="sm"
                     onClick={() => navigate('/login')}
-                    className="border-white/5 hover:border-white/10"
+                    className="border-white/5 hover:border-white/10 text-xs sm:text-sm px-2.5 sm:px-4"
                   >
                     Sign In
                   </Button>
@@ -188,7 +205,7 @@ export default function Home() {
                     variant="secondary"
                     size="sm"
                     onClick={() => navigate('/register')}
-                    className="border-white/5 hover:border-white/10"
+                    className="border-white/5 hover:border-white/10 text-xs sm:text-sm px-2.5 sm:px-4"
                   >
                     Sign Up
                   </Button>
@@ -200,10 +217,10 @@ export default function Home() {
             variant="secondary"
             size="sm"
             onClick={() => navigate('/history')}
-            className="gap-2 border-white/5 hover:border-white/10"
+            className="gap-2 border-white/5 hover:border-white/10 text-xs sm:text-sm px-2.5 sm:px-4"
           >
             <History size={16} />
-            Past Trips
+            <span className="hidden sm:inline">Past Trips</span>
           </Button>
         </div>
       </nav>
@@ -220,13 +237,8 @@ export default function Home() {
 
         {/* Floating Bento Search Card */}
         <div className="lg:col-span-5 w-full">
-          <Card glass className="relative shadow-2xl p-8 border-white/10 bg-[#111214]/85">
-            <div className="absolute top-0 right-10 transform -translate-y-1/2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#17181C] border border-white/10 text-xs text-gray-300 shadow-md">
-                <Sliders size={12} className="text-[#6EE7F9]" />
-                Trip Configurator
-              </span>
-            </div>
+          <Card glass className="relative shadow-2xl p-5 sm:p-8 border-white/10 bg-[#111214]/85">
+
 
             <form onSubmit={handleSubmit} className="space-y-6">
               
@@ -244,9 +256,9 @@ export default function Home() {
                     value={formData.destination}
                     onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
                     onFocus={() => setSearchFocused(true)}
-                    className="w-full rounded-full border border-white/10 bg-[#09090B]/60 backdrop-blur-md px-5 py-3.5 pl-12 text-white placeholder-gray-500 transition-all duration-300 focus:border-[#6EE7F9]/50 focus:outline-none focus:ring-4 focus:ring-[#6EE7F9]/10"
+                    className="w-full rounded-full border border-white/10 bg-[#09090B]/60 backdrop-blur-md px-4 py-3 sm:px-5 sm:py-3.5 pl-10 sm:pl-12 text-sm sm:text-base text-white placeholder-gray-500 transition-all duration-300 focus:border-[#6EE7F9]/50 focus:outline-none focus:ring-4 focus:ring-[#6EE7F9]/10"
                   />
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                  <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
 
                 {/* Live AI Autocomplete Suggestions */}
@@ -303,7 +315,7 @@ export default function Home() {
                         key={duration}
                         type="button"
                         onClick={() => setFormData({ ...formData, duration })}
-                        className={`px-4.5 py-2.5 rounded-full text-xs font-semibold tracking-wide border transition-all duration-300 ${
+                        className={`px-3 py-2 sm:px-4.5 sm:py-2.5 rounded-full text-xs font-semibold tracking-wide border transition-all duration-300 ${
                           isSelected
                             ? 'bg-[#8B5CF6]/15 border-[#8B5CF6]/50 text-white shadow-[0_0_15px_rgba(139,92,246,0.15)]'
                             : 'border-white/5 bg-[#17181C]/40 text-gray-400 hover:border-white/10 hover:text-white'
@@ -316,48 +328,79 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Custom Budget Slider */}
-              <div className="bg-[#17181C]/40 border border-white/5 p-5 rounded-2xl">
-                <div className="flex justify-between items-center mb-3">
+              {/* Trip Budget Custom Selection */}
+              <div className="bg-[#17181C]/40 border border-white/5 p-5 rounded-2xl space-y-4">
+                <div className="flex justify-between items-center">
                   <label className="text-sm font-medium text-gray-300 tracking-wide flex items-center gap-2">
                     <Sliders size={16} className="text-amber-500" />
                     Trip Budget
                   </label>
                   <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                    {budgetOptions[formData.budgetIndex]}
+                    {formData.budgetType === 'Custom' && formData.customBudget ? formData.customBudget : formData.budgetType}
                   </span>
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="2"
-                  step="1"
-                  value={formData.budgetIndex}
-                  onChange={(e) => setFormData({ ...formData, budgetIndex: parseInt(e.target.value) })}
-                  className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#F59E0B]"
-                />
-                <div className="flex justify-between text-[10px] text-gray-500 font-semibold uppercase tracking-wider mt-2.5">
-                  <span>Economic</span>
-                  <span>Balanced</span>
-                  <span>Premium</span>
+                
+                {/* Segmented Preset Selector buttons */}
+                <div className="grid grid-cols-4 gap-1.5 p-1 bg-[#09090B]/60 rounded-xl border border-white/5">
+                  {['Budget', 'Mid-range', 'Luxury', 'Custom'].map((type) => {
+                    const isSelected = formData.budgetType === type;
+                    return (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, budgetType: type })}
+                        className={`py-1.5 px-1 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all duration-205 text-center ${
+                          isSelected
+                            ? 'bg-[#F59E0B]/15 text-amber-400 border border-[#F59E0B]/30'
+                            : 'text-gray-400 hover:text-white border border-transparent'
+                        }`}
+                      >
+                        {type === 'Custom' ? '✏️ Custom' : type}
+                      </button>
+                    );
+                  })}
                 </div>
+
+                {/* Collapsible Custom Input Field */}
+                <AnimatePresence>
+                  {formData.budgetType === 'Custom' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pt-2">
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. $1,500 USD, 50,000 INR, or €100/day"
+                          value={formData.customBudget}
+                          onChange={(e) => setFormData({ ...formData, customBudget: e.target.value })}
+                          className="w-full rounded-xl border border-white/10 bg-[#09090B]/60 px-4 py-2.5 text-xs text-white placeholder-gray-500 transition-all duration-300 focus:border-[#F59E0B]/50 focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Personality Selector */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2.5 tracking-wide flex items-center gap-2">
                   <Compass size={16} className="text-cyan-400" />
-                  Travel Personality
+                  Travel Personalities (Select multiple)
                 </label>
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {personalities.map((p) => {
-                    const isSelected = formData.personality === p.value;
+                    const isSelected = formData.personalities.includes(p.value);
                     return (
                       <button
                         key={p.value}
                         type="button"
-                        onClick={() => setFormData({ ...formData, personality: p.value })}
-                        className={`text-left p-3.5 rounded-2xl border transition-all duration-300 flex flex-col justify-between h-[85px] ${
+                        onClick={() => handlePersonalityToggle(p.value)}
+                        className={`text-left p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 flex flex-col justify-between min-h-[75px] sm:h-[85px] ${
                           isSelected
                             ? 'bg-[#6EE7F9]/10 border-[#6EE7F9]/50 text-white shadow-[0_0_15px_rgba(110,231,249,0.15)]'
                             : 'border-white/5 bg-[#17181C]/40 text-gray-400 hover:border-white/10 hover:text-white'
@@ -365,7 +408,7 @@ export default function Home() {
                       >
                         <div className="flex items-center justify-between w-full">
                           <span className="text-lg">{p.emoji}</span>
-                          <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-[#6EE7F9]' : 'bg-transparent'}`} />
+                          <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-[#6EE7F9] shadow-[0_0_8px_#6EE7F9]' : 'bg-transparent'}`} />
                         </div>
                         <div>
                           <div className="text-xs font-semibold text-white tracking-wide">{p.value}</div>
